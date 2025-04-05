@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Онлайн-голосование</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .poll-card {
+            transition: transform 0.2s;
+        }
+        .poll-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .chart-container {
+            height: 300px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Навигация -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">Голосование Online</a>
+            <div class="d-flex">
+                <a href="#" class="btn btn-light me-2">Войти</a>
+                <a href="#" class="btn btn-outline-light">Регистрация</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Основной контент -->
+    <div class="container my-5">
+        <div class="row">
+            <!-- Блок создания опроса (для организаторов) -->
+            <div class="col-lg-4 mb-4">
+                <div class="card shadow">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">Создать новый опрос</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="createPollForm">
+                            <div class="mb-3">
+                                <label for="pollQuestion" class="form-label">Вопрос</label>
+                                <input type="text" class="form-control" id="pollQuestion" placeholder="Например: 'Какой язык программирования вы предпочитаете?'" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Варианты ответов</label>
+                                <div id="choicesContainer">
+                                    <input type="text" class="form-control mb-2" placeholder="Вариант 1" required>
+                                    <input type="text" class="form-control mb-2" placeholder="Вариант 2" required>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-primary" id="addChoice">+ Добавить вариант</button>
+                            </div>
+                            <div class="mb-3">
+                                <label for="pollEndDate" class="form-label">Дата окончания</label>
+                                <input type="datetime-local" class="form-control" id="pollEndDate" required>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100">Опубликовать опрос</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Список активных опросов -->
+            <div class="col-lg-8">
+                <h2 class="mb-4">Активные опросы</h2>
+
+                <!-- Карточка опроса 1 -->
+                <div class="card poll-card mb-4 shadow-sm">
+                    <div class="card-header">
+                        <h4>Какой язык программирования вы предпочитаете?</h4>
+                        <small class="text-muted">Завершается: 15.12.2023 23:59</small>
+                    </div>
+                    <div class="card-body">
+                        <form id="voteForm1">
+                            <div class="mb-3">
+                                <div class="form-check">
+
+> Рамазан:
+<input class="form-check-input" type="radio" name="poll1" id="option1_1" value="Python" checked>
+                                    <label class="form-check-label" for="option1_1">Python</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="poll1" id="option1_2" value="JavaScript">
+                                    <label class="form-check-label" for="option1_2">JavaScript</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="poll1" id="option1_3" value="Java">
+                                    <label class="form-check-label" for="option1_3">Java</label>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Проголосовать</button>
+                            <button type="button" class="btn btn-outline-secondary ms-2" onclick="showResults(1)">Результаты</button>
+                        </form>
+
+                        <!-- График результатов (скрыт по умолчанию) -->
+                        <div id="results1" class="chart-container mt-4" style="display:none;">
+                            <canvas id="resultsChart1"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Карточка опроса 2 -->
+                <div class="card poll-card mb-4 shadow-sm">
+                    <div class="card-header">
+                        <h4>Какой фреймворк Django вам нравится?</h4>
+                        <small class="text-muted">Завершается: 20.12.2023 23:59</small>
+                    </div>
+                    <div class="card-body">
+                        <form id="voteForm2">
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="poll2" id="option2_1" value="Django REST" checked>
+                                    <label class="form-check-label" for="option2_1">Django REST Framework</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="poll2" id="option2_2" value="Django Ninja">
+                                    <label class="form-check-label" for="option2_2">Django Ninja</label>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Проголосовать</button>
+                            <button type="button" class="btn btn-outline-secondary ms-2" onclick="showResults(2)">Результаты</button>
+                        </form>
+
+                        <div id="results2" class="chart-container mt-4" style="display:none;">
+                            <canvas id="resultsChart2"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Скрипты -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Добавление новых вариантов ответа
+        document.getElementById('addChoice').addEventListener('click', function() {
+            const container = document.getElementById('choicesContainer');
+            const newInput = document.createElement('input');
+            newInput.type = 'text';
+            newInput.className = 'form-control mb-2';
+            newInput.placeholder = 'Вариант ' + (container.children.length + 1);
+            newInput.required = true;
+            container.appendChild(newInput);
+        });
+
+> Рамазан:
+// Показ результатов голосования
+        function showResults(pollId) {
+            const resultsDiv = document.getElementById('results' + pollId);
+            resultsDiv.style.display = resultsDiv.style.display === 'none' ? 'block' : 'none';
+
+            if (resultsDiv.style.display === 'block') {
+                renderChart(pollId);
+            }
+        }
+
+        // Отрисовка графиков
+        function renderChart(pollId) {
+            const ctx = document.getElementById('resultsChart' + pollId);
+
+            // Пример данных (в реальном проекте данные будут приходить с сервера)
+            let labels, data;
+
+            if (pollId === 1) {
+                labels = ['Python', 'JavaScript', 'Java'];
+                data = [65, 30, 15];
+            } else {
+                labels = ['Django REST', 'Django Ninja'];
+                data = [70, 30];
+            }
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Голосов',
+                        data: data,
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(255, 99, 132, 0.5)',
+                            'rgba(75, 192, 192, 0.5)'
+                        ],
+                        borderColor: [
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(75, 192, 192, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Обработка форм голосования
+        document.querySelectorAll('form[id^="voteForm"]').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('Ваш голос учтен!');
+                // Здесь будет AJAX-запрос к серверу
+            });
+        });
+
+        // Обработка формы создания опроса
+        document.getElementById('createPollForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Опрос успешно создан!');
+            // Здесь будет AJAX-запрос к серверу
+        });
+    </script>
+</body>
+</html>
