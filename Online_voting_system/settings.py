@@ -1,14 +1,9 @@
 import os
 from pathlib import Path
 
-from pathlib import Path
-
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 SECRET_KEY = 'django-insecure-el45%t($&hgg8pw24o$exdp8!s_t8w(e!^gmgxkxkh2$hv@9(f'
-
 
 DEBUG = True
 
@@ -16,6 +11,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'Online_voting_system',
+    'polls',  # Добавьте приложение polls здесь
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,7 +35,7 @@ ROOT_URLCONF = 'Online_voting_system.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # <-- Добавь эту строку!
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -54,14 +50,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'Online_voting_system.wsgi.application'
 
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'voting_db',
+        'USER': 'admin',
+        'PASSWORD': '11223344',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
-
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -86,28 +84,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 STATIC_URL = 'static/'
 
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'voting_db',
-        'USER': 'admin',
-        'PASSWORD': '11223344',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
-}
-
-INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-]
