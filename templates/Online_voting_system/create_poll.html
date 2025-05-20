@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Создание опроса</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #e0eafc, #cfdef3);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .form-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 700px;
+        }
+        .choice-form {
+            position: relative;
+        }
+        .remove-choice {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            display: none;
+        }
+        .choice-form:hover .remove-choice {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-section">
+    <h3 class="text-center mb-4">Создание опроса</h3>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {% if form.errors or formset.non_form_errors %}
+            <div class="alert alert-danger mt-3">
+                <ul class="mb-0">
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li>{{ field.label }}: {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in formset.non_form_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <div class="mb-3">
+            {{ form.question.label_tag }}
+            {{ form.question }}
+        </div>
+
+        <div class="mb-3">
+            {{ form.end_date.label_tag }}
+            {{ form.end_date }}
+        </div>
+
+        <div class="mb-3">
+            {{ form.image.label_tag }}
+            {{ form.image }}
+        </div>
+
+        <div class="form-check form-switch mb-4">
+            {{ form.allow_multiple_choices }}
+            <label class="form-check-label" for="{{ form.allow_multiple_choices.id_for_label }}">
+                {{ form.allow_multiple_choices.label }}
+            </label>
+        </div>
+
+        <hr class="my-4">
+
+        <h5>Варианты ответа:</h5>
+        <div id="choices-container">
+            {% for choice_form in formset %}
+                <div class="mb-3 choice-form">
+                    {{ choice_form.choice_text }}
+                    <button type="button" class="btn btn-sm btn-danger remove-choice">&times;</button>
+                </div>
+            {% endfor %}
+        </div>
+
+        {{ formset.management_form }}
+
+        <div class="mb-4">
+            <button type="button" class="btn btn-outline-secondary w-100" id="add-choice">Добавить вариант ответа</button>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Создать опрос</button>
+    </form>
+
+    <div class="text-center mt-4">
+        <a href="{% url 'index' %}" class="btn btn-outline-dark w-100">На главную</a>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const container = document.getElementById('choices-container');
+    const addBtn = document.getElementById('add-choice');
+    let totalForms = document.getElementById('id_form-TOTAL_FORMS');
+
+    addBtn.addEventListener('click', function () {
+        const formIdx = parseInt(totalForms.value);
+        const newForm = document.createElement('div');
+        newForm.classList.add('mb-3', 'choice-form');
+        newForm.innerHTML = `
+            <input type="text"
+                   name="form-${formIdx}-choice_text"
+                   class="form-control"
+                   placeholder="Введите вариант">
+            <button type="button" class="btn btn-sm btn-danger remove-choice">&times;</button>
+        `;
+        container.appendChild(newForm);
+        totalForms.value = formIdx + 1;
+    });
+
+    container.addEventListener('click', function (e) {
+        if (e.target.classList.contains('remove-choice')) {
+            const choiceDiv = e.target.closest('.choice-form');
+            choiceDiv.remove();
+            const updatedForms = container.querySelectorAll('.choice-form');
+            updatedForms.forEach((formEl, index) => {
+                const input = formEl.querySelector('input');
+                input.name = `form-${index}-choice_text`;
+                if (input.id) input.id = `id_form-${index}-choice_text`;
+            });
+            totalForms.value = updatedForms.length;
+        }
+    });
+});
+</script>
+
+</body>
+</html>

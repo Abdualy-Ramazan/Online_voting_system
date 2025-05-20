@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Профиль пользователя</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .section-title {
+            border-bottom: 2px solid #0d6efd;
+            padding-bottom: 5px;
+            margin-bottom: 20px;
+        }
+        .card-title i {
+            color: #0d6efd;
+        }
+        .list-group-item strong {
+            color: #0d6efd;
+        }
+        .profile-image {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid #0d6efd;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'index' %}">Голосование Online</a>
+        <div class="d-flex ms-auto">
+            <span class="text-white me-3"><i class="bi bi-person-circle"></i> {{ user.username }}</span>
+            <a href="{% url 'logout' %}" class="btn btn-outline-light">Выйти</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+
+            <div class="card shadow-sm mb-4 text-center p-4">
+                <div class="card-body">
+                    {% if profile.avatar %}
+                        <img src="{{ profile.avatar.url }}" alt="Фото профиля" class="profile-image">
+                    {% else %}
+                        <img src="https://via.placeholder.com/150" alt="Нет фото" class="profile-image">
+                    {% endif %}
+                    <h3 class="card-title"><i class="bi bi-person-lines-fill me-2"></i>Личный кабинет</h3>
+                    <p class="mb-1"><strong>Имя пользователя:</strong> {{ user.username }}</p>
+                    <p><strong>Email:</strong> {{ user.email }}</p>
+
+                    <form method="post" enctype="multipart/form-data" class="mt-4">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            {{ avatar_form.avatar.label_tag }}
+                            {{ avatar_form.avatar }}
+                        </div>
+                        <button type="submit" name="avatar_upload" class="btn btn-primary">
+                            <i class="bi bi-upload"></i> Загрузить новое фото
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <h4 class="section-title"><i class="bi bi-bar-chart-steps me-2"></i>Ваши голоса</h4>
+                <ul class="list-group">
+                    {% for vote in votes %}
+                        <li class="list-group-item">
+                            <strong>{{ vote.poll.question }}</strong><br>
+                            Ответ: <span class="text-muted">{{ vote.vote_choice }}</span><br>
+                            <small class="text-muted"><i class="bi bi-clock"></i> {{ vote.created_at|date:"d.m.Y H:i" }}</small>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item text-muted">Вы ещё не голосовали.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="mb-4">
+                <h4 class="section-title"><i class="bi bi-star-fill me-2"></i>Ваши оценки</h4>
+                <ul class="list-group">
+                    {% for rating in ratings %}
+                        <li class="list-group-item">
+                            <strong>{{ rating.poll.question }}</strong><br>
+                            Оценка: <span class="text-warning">{{ rating.rating_value }}⭐</span><br>
+                            <small class="text-muted"><i class="bi bi-calendar-check"></i> {{ rating.created_at|date:"d.m.Y" }}</small>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item text-muted">Вы ещё не ставили оценок.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="mb-4">
+                <h4 class="section-title"><i class="bi bi-megaphone-fill me-2"></i>Ваши объявления</h4>
+                <ul class="list-group">
+                    {% for post in announcements %}
+                        <li class="list-group-item">
+                            <strong>{{ post.title }}</strong><br>
+                            <small class="text-muted"><i class="bi bi-calendar-event"></i> {{ post.created_at|date:"d.m.Y" }}</small>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item text-muted">Вы ещё не публиковали объявлений.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="d-flex justify-content-between flex-wrap gap-2">
+                <a href="{% url 'index' %}" class="btn btn-outline-primary">
+                    <i class="bi bi-house-door"></i> На главную
+                </a>
+                <a href="{% url 'create_poll' %}" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i> Создать опрос
+                </a>
+                <a href="{% url 'logout' %}" class="btn btn-outline-danger">
+                    <i class="bi bi-box-arrow-right"></i> Выйти
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
